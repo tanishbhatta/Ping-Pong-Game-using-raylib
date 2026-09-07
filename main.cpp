@@ -63,6 +63,12 @@ class Ball
         velY *= -1;
     };
 
+    void reset(int startX, int startY)
+    {
+        x = startX;
+        y = startY;
+    };
+
     int getX() const {return x;}
     int getY() const {return y;}
 };
@@ -99,7 +105,8 @@ void render(const Screen& screen, const Paddle& playerPaddle, const Paddle& comp
     {
         for (int c=0; c<width; c++)
         {
-            if (r >= playerY && r < playerH + playerY && c == 0){
+            if (r==0 || r == height-1) std::cout << "-";
+            else if (r >= playerY && r < playerH + playerY && c == 0){
                 std::cout << "|";
             }
             else if (r >= computerY && r < computerH + computerY && c == width-1){
@@ -109,7 +116,7 @@ void render(const Screen& screen, const Paddle& playerPaddle, const Paddle& comp
                 std::cout << "O";
             }
             else{
-                std::cout << ".";
+                std::cout << " ";
             }
         }
         std::cout << "\n";
@@ -121,6 +128,7 @@ int main() {
     Paddle player(8, 4, game.getHeight());
     Paddle computer(8, 4, game.getHeight());
     Ball ball(20, 10, 1, 1);
+    int playerScore{}, computerScore{};
 
     while (true)
     {
@@ -129,12 +137,33 @@ int main() {
             if(key == 'w') player.moveUp();
             if(key == 's') player.moveDown();
         }
+        
         system("cls");
+        static int frameCount = 0;
+        frameCount++;
+        if (frameCount % 1 == 0){
+            int diff = ball.getY() - (computer.getY() + computer.getHeight()/2);
+            if (diff < -1) computer.moveUp();
+            else if (diff > 1) computer.moveDown();
+        }
         ball.move();
-        if (ball.getX() >= player.getY() || ball.getX() < player.getHeight() + player.getY()) ball.bounceX();
-        if (ball.getX() >= computer.getY() || ball.getX() < computer.getHeight() + computer.getY()) ball.bounceX();
+        if (ball.getX() == 0 && ball.getY() >= player.getY() && ball.getY() < player.getY() + player.getHeight()) ball.bounceX();
+        if (ball.getX() == game.getWidth() -1 && ball.getY() >= computer.getY() && ball.getY() < computer.getY() + computer.getHeight()) ball.bounceX();
         if (ball.getY() == 0 || ball.getY() == game.getHeight()-1) ball.bounceY();
+        if (ball.getX() < 0){
+            computerScore += 1;
+            ball.reset(20, 10);
+        }
+        if (ball.getX() >= game.getWidth()){
+            playerScore += 1;
+            ball.reset(20, 10);
+        }
+        std::cout << "First to 10pts wins!" << std::endl;
         render(game, player, computer, ball);
+        std::cout << "Player: " << playerScore << "*   Computer: " << computerScore << "*" << std::endl;
+        if (playerScore == 10 || computerScore == 10) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
+    if (playerScore == 10) std::cout << "YOU WIN!";
+    else std::cout << "COMPUTER WINS!";
 }
