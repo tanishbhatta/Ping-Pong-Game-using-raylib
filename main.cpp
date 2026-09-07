@@ -164,6 +164,21 @@ int main() {
         if (playerScore == 10 || computerScore == 10) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-    if (playerScore == 10) std::cout << "YOU WIN!";
-    else std::cout << "COMPUTER WINS!";
+    system("cls");
+    if (playerScore == 10){
+        std::cout << "\n";
+        std::cout << "  ##################################\n";
+        std::cout << "  #                                #\n";
+        std::cout << "  #          YOU WIN!              #\n";
+        std::cout << "  #                                #\n";
+        std::cout << "  ##################################\n";
+    }else{
+        std::cout << "\n";
+        std::cout << "  ##################################\n";
+        std::cout << "  #                                #\n";
+        std::cout << "  #         COMPUTER WINS!         #\n";
+        std::cout << "  #                                #\n";
+        std::cout << "  ##################################\n";
+    }
+    system("pause");
 }
